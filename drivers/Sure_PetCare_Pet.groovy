@@ -27,6 +27,8 @@ metadata {
 		capability "Polling"
 		capability "Refresh"
 		capability "Presence Sensor"
+		
+		attribute "indoorsOnly", "string"
         
         command "setIndoorsOnly", ["string"]
         command "toggleIndoorsOnly"

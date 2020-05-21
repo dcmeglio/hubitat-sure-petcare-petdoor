@@ -32,6 +32,7 @@ metadata {
 		capability "Sensor"
         
         attribute "network","string"
+		attribute "lockMode","string"
         
         command "toggleLockMode"
         command "setLockMode", ["string"]

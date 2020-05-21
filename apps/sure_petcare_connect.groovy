@@ -214,10 +214,10 @@ def timeIntervalPAGE(params) {
 def preferencesPAGE() {
 	dynamicPage(name: "preferencesPAGE", title: "Preferences", uninstall: false, install: false) {
     	section {
-    		input "sendPush", "bool", title: "Send as Push?", required: false, defaultValue: false
+			input "pushDevices", "capability.notification", multiple: true, title: "Devices to notify:"
         }
     	section("Sure PetCare Notifications:") {			
-			input "sendPetDoorLock", "bool", title: "Notify when pet doors are lock and unlocked?", required: false, defaultValue: false
+			input "sendPetDoorLock", "bool", title: "Notify when pet doors are locked and unlocked?", required: false, defaultValue: false
             input "sendPetPresence", "bool", title: "Notify when pets arrive and leave?", required: false, defaultValue: false
             input "sendPetIndoors", "bool", title: "Notify when pets are set to indoors only or allowed outdoors?", required: false, defaultValue: false
             input "sendPetLooked", "bool", title: "Notify when pets look through door?", required: false, defaultValue: false
@@ -232,16 +232,21 @@ def headerSECTION() {
 }
 
 def preferencesSelected() {
-	return (sendPush) && (sendPetDoorLock || sendPetPresence || sendPetLooked || sendDoorConnection) ? "complete" : null
+	return (pushDevices != null && pushDevices.size() > 0) && (sendPetDoorLock || sendPetPresence || sendPetLooked || sendDoorConnection) ? "complete" : null
 }
 
 def getPreferencesString() {
 	def listString = ""
-    if (sendPush) listString += "Send Push, "
-    if (sendPetDoorLock) listString += "Pet Door Lock/Unlock, "
-    if (sendPetPresence) listString += "Pet Arrival/Leaving, "
-    if (sendPetLooked) listString += "Pet Looked, "
-    if (sendDoorConnection) listString += "Pet Door Offline, "
+	if (pushDevices && pushDevices.size() > 0) {
+		listString += "Send Notification to "
+		pushDevices.each { it -> listString += it.name + ", "}
+		listString = listString[0..-3]
+		listString += " when "
+	}
+    if (sendPetDoorLock) listString += "Pet Door Locks/Unlocks, "
+    if (sendPetPresence) listString += "Pet Arrives/Leaves, "
+    if (sendPetLooked) listString += "Pet Looks, "
+    if (sendDoorConnection) listString += "Pet Door is Offline, "
     if (listString != "") listString = listString.substring(0, listString.length() - 2)
     return listString
 }
@@ -438,8 +443,8 @@ def syncCurfewSettings(data) {
 
 //Event Handler for Connect App
 def evtHandler(evt) {
-    def msg
-    if (evt.isStateChange == 'true') {
+	def msg
+    if (evt.isStateChange == true) {
     	if (evt.name == "petInfo") {
     		msg = evt.value
         	if (settings.sendPetLooked) messageHandler(msg, false)  
@@ -665,7 +670,7 @@ def addPet() {
 }
 
 def refreshDevices() {
-	log.info("Executing refreshDevices...")
+	logDebug "Executing refreshDevices..."
     if (atomicState.refreshCounter == null || atomicState.refreshCounter >= 10) {
     	atomicState.refreshCounter = 0
     } else {
@@ -676,10 +681,10 @@ def refreshDevices() {
     	device.setStatusRespCode(resp.status)
         device.setStatusResponse(resp.data)
     	if (device.typeName == "Sure PetCare Pet") {
-        	log.info("High Freq Refreshing device ${device.typeName}...")
+        	logDebug "High Freq Refreshing device ${device.typeName}..."
 			device.refresh()
         } else if (device.typeName == "Sure PetCare Pet Door Connect") {
-        	log.info("High Freq Refreshing device ${device.typeName}...")
+        	logDebug "High Freq Refreshing device ${device.typeName}..."
 			device.refresh()
         	//Update curfew status
             def flap = resp.data.data.devices.find{device.deviceNetworkId.toInteger() == it.id}
@@ -881,8 +886,8 @@ def getHouseholdID() {
 
 def messageHandler(msg, forceFlag) {
 	logDebug "Executing 'messageHandler for $msg. Forcing is $forceFlag'"
-    if (settings.sendPush || forceFlag) {
-		sendPush(msg)
+    if (pushDevices != null) {
+		pushDevices*.deviceNotification(msg)
 	}
 }
 
