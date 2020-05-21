@@ -66,8 +66,10 @@ def poll() {
     sendEvent(name: "created_at", value: flap.created_at)
     sendEvent(name: "updated_at", value: flap.updated_at)
     def curfewStatus
+	
     if (flap.control.curfew && !flap.control.curfew.isEmpty()) {
-    	curfewStatus = "A curfew is activated on this device between ${flap.control.curfew[0].lock_time} and ${flap.control.curfew[0].unlock_time}."
+		def curfewObject = flap.control.curfew[0] ?: flap.control.curfew
+    	curfewStatus = "A curfew is activated on this device between ${curfewObject.lock_time} and ${curfewObject.unlock_time}."
     } else {
     	curfewStatus = "A curfew is not enabled on this device."
     }
