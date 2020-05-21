@@ -215,7 +215,6 @@ def preferencesPAGE() {
 	dynamicPage(name: "preferencesPAGE", title: "Preferences", uninstall: false, install: false) {
     	section {
     		input "sendPush", "bool", title: "Send as Push?", required: false, defaultValue: false
-			input "sendSMS", "phone", title: "Send as SMS?", required: false, defaultValue: null	
         }
     	section("Sure PetCare Notifications:") {			
 			input "sendPetDoorLock", "bool", title: "Notify when pet doors are lock and unlocked?", required: false, defaultValue: false
@@ -233,13 +232,12 @@ def headerSECTION() {
 }
 
 def preferencesSelected() {
-	return (sendPush || sendSMS != null) && (sendPetDoorLock || sendPetPresence || sendPetLooked || sendDoorConnection) ? "complete" : null
+	return (sendPush) && (sendPetDoorLock || sendPetPresence || sendPetLooked || sendDoorConnection) ? "complete" : null
 }
 
 def getPreferencesString() {
 	def listString = ""
     if (sendPush) listString += "Send Push, "
-    if (sendSMS != null) listString += "Send SMS, "
     if (sendPetDoorLock) listString += "Pet Door Lock/Unlock, "
     if (sendPetPresence) listString += "Pet Arrival/Leaving, "
     if (sendPetLooked) listString += "Pet Looked, "
@@ -883,9 +881,6 @@ def getHouseholdID() {
 
 def messageHandler(msg, forceFlag) {
 	logDebug "Executing 'messageHandler for $msg. Forcing is $forceFlag'"
-	if (settings.sendSMS != null && !forceFlag) {
-		sendSms(settings.sendSMS, msg) 
-	}
     if (settings.sendPush || forceFlag) {
 		sendPush(msg)
 	}
