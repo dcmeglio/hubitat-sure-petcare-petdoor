@@ -29,6 +29,7 @@ metadata {
 		capability "Presence Sensor"
 		
 		attribute "indoorsOnly", "string"
+		attribute "tag_id", "string"
         
         command "setIndoorsOnly", ["string"]
         command "toggleIndoorsOnly"

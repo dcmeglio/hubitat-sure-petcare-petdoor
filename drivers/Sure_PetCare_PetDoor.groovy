@@ -33,6 +33,7 @@ metadata {
         
         attribute "network","string"
 		attribute "lockMode","string"
+		attribute "product_id", "string"
         
         command "toggleLockMode"
         command "setLockMode", ["string"]

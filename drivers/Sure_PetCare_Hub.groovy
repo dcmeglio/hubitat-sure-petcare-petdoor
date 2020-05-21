@@ -25,6 +25,7 @@ metadata {
         capability "Sensor"
         
         attribute "network","string"
+		attribute "ledMode","string"
         
         command "toggleLedMode"
         command "setLedMode", ["string"]
