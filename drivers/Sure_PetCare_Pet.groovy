@@ -72,9 +72,11 @@ def poll() {
     if (pet.photo) {
     	state.photoURL = pet.photo.location
     }
-    def tagStatus = parent.getTagStatus(device.currentState("tag_id").getValue().toInteger())
-    parent.logDebug "Cat indoors only status is ${tagStatus}"
-    sendEvent(name: 'indoorsOnly', value: tagStatus, displayed: true)
+	if (device.currentState("tag_id") != null) {
+		def tagStatus = parent.getTagStatus(device.currentState("tag_id").getValue().toInteger())
+		parent.logDebug "Cat indoors only status is ${tagStatus}"
+		sendEvent(name: 'indoorsOnly', value: tagStatus, displayed: true)
+	}
     def tag_id = pet.tag_id
     response = state.statusResponse.data.tags
     def tag = response.find{tag_id == it.id}
