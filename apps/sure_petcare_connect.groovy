@@ -697,7 +697,7 @@ def refreshDevices() {
             	app.updateSetting("curfewEnabled#${device.deviceNetworkId}", [type: bool, value: false]) 
             }
         } else if (atomicState.refreshCounter == 10) {
-        	log.info("Low Freq Refreshing device ${device.name} ...")
+        	logDebug "Low Freq Refreshing device ${device.name} ..."
             try {
     			device.refresh()
         	} catch (e) {
@@ -827,7 +827,7 @@ def apiPUT(path, body = [:]) {
 def apiGET(path) {
 	logDebug("Beginning API GET: ${apiURL(path)}")
     try {
-    	httpGet(uri: apiURL(path), headers: apiRequestHeaders() ) {
+    	httpGet(uri: apiURL(path), headers: apiRequestHeaders(), timeout: 45 ) {
     		response ->
 			logResponse(response)
 			return response
