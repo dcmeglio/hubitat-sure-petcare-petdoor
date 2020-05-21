@@ -590,7 +590,7 @@ def addHub() {
                 	name: state.surePetCareHubDevices[device],
 					label: state.surePetCareHubDevices[device]
 				]
-            childDevice = addChildDevice(app.namespace, "Sure PetCare Hub", "$device", null, data)
+            childDevice = addChildDevice("alyc100", "Sure PetCare Hub", "$device", data)
 
 			log.debug "Created ${state.surePetCareHubDevices[device]} with id: ${device}"
 		} else {
@@ -611,7 +611,7 @@ def addPetDoorConnect() {
                 	name: state.surePetCarePetDoorConnectDevices[device],
 					label: state.surePetCarePetDoorConnectDevices[device]
 				]
-            childDevice = addChildDevice(app.namespace, "Sure PetCare Pet Door Connect", "$device", null, data)
+            childDevice = addChildDevice("alyc100", "Sure PetCare Pet Door Connect", "$device", data)
 
 			log.debug "Created ${state.surePetCarePetDoorConnectDevices[device]} with id: ${device}"
 		} else {
@@ -632,7 +632,7 @@ def addDualScanCatFlapConnect() {
                 	name: state.surePetCareDualScanCatFlapConnectDevices[device],
 					label: state.surePetCareDualScanCatFlapConnectDevices[device]
 				]
-            childDevice = addChildDevice(app.namespace, "Sure PetCare Pet Door Connect", "$device", null, data)
+            childDevice = addChildDevice("alyc100", "Sure PetCare Pet Door Connect", "$device", data)
 
 			log.debug "Created ${state.surePetCareDualScanCatFlapConnectDevices[device]} with id: ${device}"
 		} else {
@@ -653,7 +653,7 @@ def addPet() {
                 	name: state.surePetPets[device],
 					label: state.surePetPets[device]
 				]
-            childDevice = addChildDevice(app.namespace, "Sure PetCare Pet", "$device", null, data)
+            childDevice = addChildDevice("alyc100", "Sure PetCare Pet", "$device", data)
 
 			log.debug "Created ${state.surePetPets[device]} with id: ${device}"
 		} else {
