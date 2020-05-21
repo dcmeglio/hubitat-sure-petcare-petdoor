@@ -1,0 +1,40 @@
+{
+  "packageName": "Sure Petcare Pet Door",
+  "author": "Alex Lee Yuk Cheung & Dominick Meglio",
+  "minimumHEVersion": "2.1.9",
+  "version": "1.2",
+  "dateReleased": "2020-05-20",
+  "apps": [
+    {
+      "id": "17306bd4-86b5-4404-9d3f-bcf5086619a4",
+      "name": "Sure PetCare (Connect)",
+      "namespace": "alyc100",
+      "location": "https://raw.githubusercontent.com/dcmeglio/hubitat-sure-petcare-petdoor/master/apps/sure_petcare_connect.groovy",
+      "required": true,
+      "oauth": false
+    }
+  ],
+  "drivers": [
+    {
+      "id": "19b7e0aa-ce2e-4871-a8b2-7f36b7a73472",
+      "name": "Sure PetCare Hub",
+      "namespace": "alyc100",
+      "location": "https://raw.githubusercontent.com/dcmeglio/hubitat-sure-petcare-petdoor/master/drivers/Sure_PetCare_Hub.groovy",
+      "required": true
+    },
+    {
+      "id": "2186a82d-58f5-4e3a-bf65-94969842459e",
+      "name": "Sure PetCare Pet Door Connect",
+      "namespace": "alyc100",
+      "location": "https://raw.githubusercontent.com/dcmeglio/hubitat-sure-petcare-petdoor/master/drivers/Sure_PetCare_PetDoor.groovy",
+      "required": true
+    },
+    {
+      "id": "02ca3845-0c6d-4450-95c3-6a4d2e52c22a",
+      "name": "Sure PetCare Pet",
+      "namespace": "alyc100",
+      "location": "https://raw.githubusercontent.com/dcmeglio/hubitat-sure-petcare-petdoor/master/drivers/Sure_PetCare_Pet.groovy",
+      "required": true
+    }
+  ]
+}
