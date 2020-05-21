@@ -176,7 +176,7 @@ def selectDevicePAGE() {
 
 def curfewPAGE(params) {
 	logDebug "PARAMS: $params"
-    if (params.containsKey("deviceId")) state.configDeviceId = params?.deviceId
+    if (params?.containsKey("deviceId")) state.configDeviceId = params?.deviceId
 	def deviceId = state.configDeviceId
 	return dynamicPage(name: "curfewPAGE", title: "Curfew Settings", install: false, uninstall: false) { 
     	section() {
