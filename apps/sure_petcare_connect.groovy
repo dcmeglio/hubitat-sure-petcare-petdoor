@@ -2,6 +2,7 @@
  *  Sure Petcare (Connect)
  *
  *  Copyright 2020 Alex Lee Yuk Cheung
+ *  Ported to Hubitat by Dominick Meglio
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -26,7 +27,7 @@ definition(
     name: "Sure PetCare (Connect)",
     namespace: "alyc100",
     author: "Alex Lee Yuk Cheung",
-    description: "Connect your Sure PetCare devices to SmartThings.",
+    description: "Connect your Sure PetCare devices to Hubitat.",
     category: "",
     iconUrl: "https://www.surepetcare.io/assets/images/onboarding/Sure_Petcare_Logo.png",
     iconX2Url: "https://www.surepetcare.io/assets/images/onboarding/Sure_Petcare_Logo.png",
@@ -98,7 +99,7 @@ def firstPage() {
                 }
             } else {
             	section {
-            		paragraph "There was a problem connecting to Sure PetCare. Check your user credentials and error logs in SmartThings web console.\n\n${state.loginerrors}"
+            		paragraph "There was a problem connecting to Sure PetCare. Check your user credentials and error logs in Hubitat web console.\n\n${state.loginerrors}"
            		}
            }
     	}
@@ -109,7 +110,7 @@ def loginPAGE() {
 	if (username == null || username == '' || password == null || password == '') {
 		return dynamicPage(name: "loginPAGE", title: "Login", uninstall: false, install: false) {
     		section { headerSECTION() }
-        	section { paragraph "Enter your Sure PetCare account credentials below to enable SmartThings and Sure PetCare integration." }
+        	section { paragraph "Enter your Sure PetCare account credentials below to enable Hubitat and Sure PetCare integration." }
     		section {
     			input("username", "text", title: "Username", description: "Your Sure PetCare username (usually an email address)", required: true)
 				input("password", "password", title: "Password", description: "Your Sure PetCare password", required: true, submitOnChange: true)
@@ -120,7 +121,7 @@ def loginPAGE() {
     	getSurePetCareAccessToken()
         dynamicPage(name: "loginPAGE", title: "Login", uninstall: false, install: false) {
     		section { headerSECTION() }
-        	section { paragraph "Enter your Sure PetCare account credentials below to enable SmartThings and Sure PetCare integration." }
+        	section { paragraph "Enter your Sure PetCare account credentials below to enable Hubitat and Sure PetCare integration." }
     		section("Sure PetCare Credentials:") {
 				input("username", "text", title: "Username", description: "Your Sure PetCare username (usually an email address)", required: true)
 				input("password", "password", title: "Password", description: "Your Sure PetCare password", required: true, submitOnChange: true)	
@@ -133,7 +134,7 @@ def loginPAGE() {
         	}
         	else {
         		section {
-            		paragraph "There was a problem connecting to Sure PetCare. Check your user credentials and error logs in SmartThings web console.\n\n${state.loginerrors}"
+            		paragraph "There was a problem connecting to Sure PetCare. Check your user credentials and error logs in Hubitat web console.\n\n${state.loginerrors}"
            		}
         	}
         }
@@ -788,7 +789,7 @@ def apiPOST(path, body = [:]) {
 	def bodyString = new groovy.json.JsonBuilder(body).toString()
 	log.debug("Beginning API POST: ${apiURL(path)}, ${bodyString}")
     try {
-    	httpPost(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders() ) {
+    	httpPost(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders(), requestContentType: "application/json" ) {
     		response ->
 			logResponse(response)
 			return response
@@ -803,7 +804,7 @@ def apiPUT(path, body = [:]) {
 	def bodyString = new groovy.json.JsonBuilder(body).toString()
 	log.debug("Beginning API PUT: ${apiURL(path)}, ${bodyString}")
     try {
-    	httpPut(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders() ) {
+    	httpPut(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders(), requestContentType: "application/json") {
     		response ->
 			logResponse(response)
 			return response
@@ -890,14 +891,12 @@ def messageHandler(msg, forceFlag) {
 def getTimeZone() {
 	def tz = null
 	if(location?.timeZone) { tz = location?.timeZone }
-	if(!tz) { log.warn "No time zone has been retrieved from SmartThings. Please try to open your ST location and press Save." }
+	if(!tz) { log.warn "No time zone has been retrieved from Hubitat. Please try to open your ST location and press Save." }
 	return tz
 }
 
 Map apiRequestHeaders() {
-   return [ "Authorization": "Bearer $state.surePetCareAccessToken",
-            "Content-Type": "application/json"
-	]
+   return [ "Authorization": "Bearer $state.surePetCareAccessToken"	]
 }
 
 def logResponse(response) {
