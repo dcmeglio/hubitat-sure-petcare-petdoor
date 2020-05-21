@@ -72,7 +72,7 @@ def firstPage() {
 						if (selectedPetDoorConnect && selectedPetDoorConnect.size() > 0) {
                 			selectedPetDoorConnect.each() {
                            		def curfewEnabled = curfewSelected(it)
-                            	href("curfewPAGE", params: ["deviceId": it], title: "Curfew for ${state.surePetCarePetDoorConnectDevices[it]}", description: settings["curfewEnabled#$it"] ? "${getSmartScheduleString(it)}" : "Tap to configure curfew for ${state.surePetCarePetDoorConnectDevices[it]}", state: curfewEnabled, required: false, submitOnChange: false)
+                            	href("curfewPAGE", params: ["deviceId": it], title: "Curfew for ${state.surePetCarePetDoorConnectDevices[it]}", description: settings["curfewEnabled#$it"] ? "${getCurfewString(it)}" : "Tap to configure curfew for ${state.surePetCarePetDoorConnectDevices[it]}", state: curfewEnabled, required: false, submitOnChange: false)
         					}
                 		}
                         if (selectedDualScanCatFlapConnect && selectedDualScanCatFlapConnect.size() > 0) {
@@ -102,6 +102,9 @@ def firstPage() {
             		paragraph "There was a problem connecting to Sure PetCare. Check your user credentials and error logs in Hubitat web console.\n\n${state.loginerrors}"
            		}
            }
+		   section {
+			input "debugOutput", "bool", title: "Enable debug logging?", defaultValue: true, displayDuringSetup: false, required: false
+		   }
     	}
     }
 }
@@ -172,7 +175,7 @@ def selectDevicePAGE() {
 }
 
 def curfewPAGE(params) {
-	log.debug "PARAMS: $params"
+	logDebug "PARAMS: $params"
     if (params.containsKey("deviceId")) state.configDeviceId = params?.deviceId
 	def deviceId = state.configDeviceId
 	return dynamicPage(name: "curfewPAGE", title: "Curfew Settings", install: false, uninstall: false) { 
@@ -340,7 +343,7 @@ def greyedOutTime(starting, ending){
 // App lifecycle hooks
 
 def installed() {
-	log.debug "installed"
+	logDebug "installed"
 	initialize()
 	// Check for new devices and remove old ones every 3 hours
 	runEvery3Hours('updateDevices')
@@ -350,7 +353,7 @@ def installed() {
 
 // called after settings are changed
 def updated() {
-	log.debug "updated"
+	logDebug "updated"
     unsubscribe()
 	initialize()
     unschedule('refreshDevices')
@@ -371,7 +374,7 @@ private removeChildDevices(devices) {
 
 // called after Done is hit after selecting a Location
 def initialize() {
-	log.debug "initialize"
+	logDebug "initialize"
 	if (selectedHub) {
 		addHub()
 	}
@@ -471,12 +474,12 @@ def updateDevices() {
 
     def selectors = []
 	devices.each { device ->
-        log.debug "Identified: device ${device.id}: ${device.product_id}: ${device.household_id}: ${device.name}: ${device.serial_number}: ${device.mac_address}"
+        logDebug "Identified: device ${device.id}: ${device.product_id}: ${device.household_id}: ${device.name}: ${device.serial_number}: ${device.mac_address}"
         selectors.add("${device.id}")
         
         //Hub
         if (device.product_id == 1) {
-        	log.debug "Identified: ${device.name} Pet Care Hub"
+        	logDebug "Identified: ${device.name} Pet Care Hub"
             def value = "${device.name} PetCare Hub"
             def key = device.id
             state.surePetCareHubDevices["${key}"] = value
@@ -487,13 +490,13 @@ def updateDevices() {
             	//Update name of device if different.
             	if(childDevice.name != device.name + " PetCare Hub") {
             		childDevice.name = device.name + " PetCare Hub"
-                	log.debug "Device's name has changed."
+                	logDebug "Device's name has changed."
             	}
             }
         }
         //Pet Door Connect
         else if (device.product_id == 3) {
-        	log.debug "Identified: ${device.name} Pet Door Connect"
+        	logDebug "Identified: ${device.name} Pet Door Connect"
             def value = "${device.name} Pet Door Connect"
             def key = device.id
             state.surePetCarePetDoorConnectDevices["${key}"] = value
@@ -504,13 +507,13 @@ def updateDevices() {
             	//Update name of device if different.
             	if(childDevice.name != device.name + " Pet Door Connect") {
             		childDevice.name = device.name + " Pet Door Connect"
-                	log.debug "Device's name has changed."
+                	logDebug "Device's name has changed."
             	}
             }
         }
         //Dual Scan Cat Flap Connect
         else if (device.product_id == 6) {
-        	log.debug "Identified: ${device.name} Dual Scan Cat Flap Connect"
+        	logDebug "Identified: ${device.name} Dual Scan Cat Flap Connect"
             def value = "${device.name} Dual Scan Cat Flap Connect"
             def key = device.id
             state.surePetCareDualScanCatFlapConnectDevices["${key}"] = value
@@ -521,7 +524,7 @@ def updateDevices() {
             	//Update name of device if different.
             	if(childDevice.name != device.name + " Dual Scan Cat Flap Connect") {
             		childDevice.name = device.name + " Dual Scan Cat Flap Connect"
-                	log.debug "Device's name has changed."
+                	logDebug "Device's name has changed."
             	}
             }
         }
@@ -535,7 +538,7 @@ def updateDevices() {
     
     pets.each {pet ->
     	def species = (pet.species_id == 2) ? "dog" : "cat"
-    	log.debug "Identified: ${pet.name} the ${species}"
+    	logDebug "Identified: ${pet.name} the ${species}"
         selectors.add("${pet.id}")
         def value = "${pet.name} the ${species}"
             def key = pet.id
@@ -547,7 +550,7 @@ def updateDevices() {
             	//Update name of device if different.
             	if(childDevice.name != pet.name + " the ${species}") {
             		childDevice.name = pet.name + " the ${species}"
-                	log.debug "Pet's name has changed."
+                	logDebug "Pet's name has changed."
             	}
             }
     }
@@ -571,7 +574,7 @@ def updateLocations() {
     
     def selectors = []
 	locations.each { location ->
-        log.debug "Identified: location ${location.id}: ${location.name}"
+        logDebug "Identified: location ${location.id}: ${location.name}"
             selectors.add("${location.id}")
             def value = "${location.name}"
 			def key = location.id
@@ -593,9 +596,9 @@ def addHub() {
 				]
             childDevice = addChildDevice("alyc100", "Sure PetCare Hub", "$device", data)
 
-			log.debug "Created ${state.surePetCareHubDevices[device]} with id: ${device}"
+			logDebug "Created ${state.surePetCareHubDevices[device]} with id: ${device}"
 		} else {
-			log.debug "found ${state.surePetCareHubDevices[device]} with id ${device} already exists"
+			logDebug "found ${state.surePetCareHubDevices[device]} with id ${device} already exists"
 		}
     }
 }
@@ -614,9 +617,9 @@ def addPetDoorConnect() {
 				]
             childDevice = addChildDevice("alyc100", "Sure PetCare Pet Door Connect", "$device", data)
 
-			log.debug "Created ${state.surePetCarePetDoorConnectDevices[device]} with id: ${device}"
+			logDebug "Created ${state.surePetCarePetDoorConnectDevices[device]} with id: ${device}"
 		} else {
-			log.debug "found ${state.surePetCarePetDoorConnectDevices[device]} with id ${device} already exists"
+			logDebug "found ${state.surePetCarePetDoorConnectDevices[device]} with id ${device} already exists"
 		}
     }
 }
@@ -635,9 +638,9 @@ def addDualScanCatFlapConnect() {
 				]
             childDevice = addChildDevice("alyc100", "Sure PetCare Pet Door Connect", "$device", data)
 
-			log.debug "Created ${state.surePetCareDualScanCatFlapConnectDevices[device]} with id: ${device}"
+			logDebug "Created ${state.surePetCareDualScanCatFlapConnectDevices[device]} with id: ${device}"
 		} else {
-			log.debug "found ${state.surePetCareDualScanCatFlapConnectDevices[device]} with id ${device} already exists"
+			logDebug "found ${state.surePetCareDualScanCatFlapConnectDevices[device]} with id ${device} already exists"
 		}
     }
 }
@@ -656,9 +659,9 @@ def addPet() {
 				]
             childDevice = addChildDevice("alyc100", "Sure PetCare Pet", "$device", data)
 
-			log.debug "Created ${state.surePetPets[device]} with id: ${device}"
+			logDebug "Created ${state.surePetPets[device]} with id: ${device}"
 		} else {
-			log.debug "found ${state.surePetPets[device]} with id ${device} already exists"
+			logDebug "found ${state.surePetPets[device]} with id ${device} already exists"
 		}
     }
 }
@@ -720,7 +723,7 @@ def petsList() {
     	def body = [:]
 		def resp = apiGET('/api/household/' + selectedLocation + '/pet')
 		if (resp.status == 200) {
-            log.debug resp.data.data
+            logDebug resp.data.data
 			return resp.data.data
 		} else {
 			log.error("Non-200 from location list call. ${resp.status} ${resp.data}")
@@ -735,7 +738,7 @@ def locationsList() {
     	def body = [:]
 		def resp = apiGET('/api/household')
 		if (resp.status == 200) {
-            log.debug resp.data.data
+            logDebug resp.data.data
 			return resp.data.data
 		} else {
 			log.error("Non-200 from location list call. ${resp.status} ${resp.data}")
@@ -762,14 +765,14 @@ def getSurePetCareAccessToken() {
 		state.cookie = ''
 
 		httpPostJson(params) {response ->
-			log.debug "Request was successful, $response.status"
-			log.debug response.headers
+			logDebug "Request was successful, $response.status"
+			logDebug response.headers
 
         	state.cookie = response?.headers?.'Set-Cookie'?.split(";")?.getAt(0)
-			log.debug "Adding cookie to collection: $cookie"
-        	log.debug "auth: $response.data"
-			log.debug "cookie: $state.cookie"
-        	log.debug "sessionid: ${response.data.data.token}"
+			logDebug "Adding cookie to collection: $cookie"
+        	logDebug "auth: $response.data"
+			logDebug "cookie: $state.cookie"
+        	logDebug "sessionid: ${response.data.data.token}"
 
         	state.surePetCareAccessToken = response.data.data.token
         	// set the expiration to 5 minutes
@@ -787,7 +790,7 @@ def getSurePetCareAccessToken() {
 
 def apiPOST(path, body = [:]) {
 	def bodyString = new groovy.json.JsonBuilder(body).toString()
-	log.debug("Beginning API POST: ${apiURL(path)}, ${bodyString}")
+	logDebug("Beginning API POST: ${apiURL(path)}, ${bodyString}")
     try {
     	httpPost(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders(), requestContentType: "application/json" ) {
     		response ->
@@ -802,7 +805,7 @@ def apiPOST(path, body = [:]) {
 
 def apiPUT(path, body = [:]) {
 	def bodyString = new groovy.json.JsonBuilder(body).toString()
-	log.debug("Beginning API PUT: ${apiURL(path)}, ${bodyString}")
+	logDebug("Beginning API PUT: ${apiURL(path)}, ${bodyString}")
     try {
     	httpPut(uri: apiURL(path), body: bodyString, headers: apiRequestHeaders(), requestContentType: "application/json") {
     		response ->
@@ -819,7 +822,7 @@ def apiPUT(path, body = [:]) {
 }
 
 def apiGET(path) {
-	log.debug("Beginning API GET: ${apiURL(path)}")
+	logDebug("Beginning API GET: ${apiURL(path)}")
     try {
     	httpGet(uri: apiURL(path), headers: apiRequestHeaders() ) {
     		response ->
@@ -834,7 +837,7 @@ def apiGET(path) {
 
 //Used by Pet device to get tagID indoors only status for household
 def getTagStatus(tagID) {
-	log.debug "Executing 'getTagStatus'"
+	logDebug "Executing 'getTagStatus'"
 	def result = "empty"
     def profileList = []
 	getChildDevices().findAll { it.typeName == "Sure PetCare Pet Door Connect" }.each { childDevice -> 
@@ -843,14 +846,14 @@ def getTagStatus(tagID) {
         	profileList.add(resp.data.data.profile)
         }
     }
-    log.debug "Profile List of child devices ${profileList}"
+    logDebug "Profile List of child devices ${profileList}"
     result = (profileList.size() > 0 && profileList.contains(2)) ? "false" : "true"
     return result
 }
 
 //Used by Pet device to set tag ID to indoors only for household
 def setTagToIndoorsOnly(tagID) {
-	log.debug "Executing 'setTagToIndoorsOnly'"
+	logDebug "Executing 'setTagToIndoorsOnly'"
 	getChildDevices().findAll { it.typeName == "Sure PetCare Pet Door Connect" }.each { childDevice -> 
     	if (childDevice.currentState("product_id").getValue().toInteger() == 6) {
         	def body = [
@@ -863,7 +866,7 @@ def setTagToIndoorsOnly(tagID) {
 
 //Used by Pet device to set tag ID to allow outdoors for household
 def setTagToOutdoors(tagID) {
-	log.debug "Executing 'setTagToOutdoors'"
+	logDebug "Executing 'setTagToOutdoors'"
 	getChildDevices().findAll { it.typeName == "Sure PetCare Pet Door Connect" }.each { childDevice -> 
     	if (childDevice.currentState("product_id").getValue().toInteger() == 6) {
         	def body = [
@@ -879,7 +882,7 @@ def getHouseholdID() {
 }
 
 def messageHandler(msg, forceFlag) {
-	log.debug "Executing 'messageHandler for $msg. Forcing is $forceFlag'"
+	logDebug "Executing 'messageHandler for $msg. Forcing is $forceFlag'"
 	if (settings.sendSMS != null && !forceFlag) {
 		sendSms(settings.sendSMS, msg) 
 	}
@@ -891,7 +894,7 @@ def messageHandler(msg, forceFlag) {
 def getTimeZone() {
 	def tz = null
 	if(location?.timeZone) { tz = location?.timeZone }
-	if(!tz) { log.warn "No time zone has been retrieved from Hubitat. Please try to open your ST location and press Save." }
+	if(!tz) { log.warn "No time zone has been retrieved from Hubitat. Please try to open your HE location and press Save." }
 	return tz
 }
 
@@ -900,8 +903,8 @@ Map apiRequestHeaders() {
 }
 
 def logResponse(response) {
-	log.info("Status: ${response.status}")
-	log.info("Body: ${response.data}")
+	logDebug "Status: ${response.status}"
+	logDebug "Body: ${response.data}"
 }
 
 def logErrors(options = [errorReturn: null, logObject: log], Closure c) {
@@ -928,4 +931,10 @@ private def textVersion() {
 
 private def textCopyright() {
     def text = "Copyright © 2020 Alex Lee Yuk Cheung"
+}
+
+def logDebug(msg) {
+    if (settings?.debugOutput) {
+		log.debug msg
+	}
 }

@@ -42,7 +42,7 @@ def updated() {
 }
 
 def poll() {
-	log.debug "Executing 'poll'"
+	parent.logDebug "Executing 'poll'"
 	
     if (!state.statusRespCode || state.statusRespCode != 200) {
 		log.error("Unexpected result in poll(): [${state.statusRespCode}] ${state.statusResponse}")
@@ -78,7 +78,7 @@ def poll() {
 }
 
 def toggleLedMode() {
-	log.debug "Executing 'toggleLedMode'"
+	parent.logDebug "Executing 'toggleLedMode'"
     def ledMode
 	if (device.currentState("ledMode").getValue() == "off") { 
     	ledMode = "dim"
@@ -93,7 +93,7 @@ def toggleLedMode() {
 }
 
 def setLedMode(mode) {
-	log.debug "Executing 'setLedMode' with mode ${mode}"
+	parent.logDebug "Executing 'setLedMode' with mode ${mode}"
 	def modeValue
 	switch (mode) {
     	case "bright":
@@ -113,12 +113,12 @@ def setLedMode(mode) {
 }
 
 def refresh() {
-	log.debug "Executing 'refresh'"
+	parent.logDebug "Executing 'refresh'"
 	poll()    
 }
 
 def updateStatusAndRefresh() {
-	log.debug "Executing 'updateStatusAndRefresh'"
+	parent.logDebug "Executing 'updateStatusAndRefresh'"
     def resp = parent.apiGET("/api/me/start")
     setStatusRespCode(resp.status)
     setStatusResponse(resp.data)

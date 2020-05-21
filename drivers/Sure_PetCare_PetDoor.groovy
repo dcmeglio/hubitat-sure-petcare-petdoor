@@ -52,7 +52,7 @@ def updated() {
 }
 
 def poll() {
-	log.debug "Executing 'poll'"
+	parent.logDebug "Executing 'poll'"
 	
     if (!state.statusRespCode || state.statusRespCode != 200) {
 		log.error("Unexpected result in poll(): [${state.statusRespCode}] ${state.statusResponse}")
@@ -107,7 +107,7 @@ def poll() {
 }
 
 def toggleLockMode() {
-	log.debug "Executing 'toggleLockMode'"
+	parent.logDebug "Executing 'toggleLockMode'"
     def lockMode
 	if (device.currentState("lockMode").getValue() == "both") { 
     	lockMode = "in"
@@ -122,7 +122,7 @@ def toggleLockMode() {
 }
 
 def setLockMode(mode) {
-	log.debug "Executing 'setLockMode' with mode ${mode}"
+	parent.logDebug "Executing 'setLockMode' with mode ${mode}"
 	def modeValue
 	switch (mode) {
     	case "none":
@@ -150,17 +150,17 @@ def setLockMode(mode) {
 }
 
 def lock() {
-	log.debug "Executing 'lock'"
+	parent.logDebug "Executing 'lock'"
 	setLockMode("in")
 }
 
 def unlock() {
-	log.debug "Executing 'unlock'"
+	parent.logDebug "Executing 'unlock'"
 	setLockMode("none")
 }
 
 def getBatteryPercent(voltage) {
-	log.debug "Executing 'getBatteryPercent'"
+	parent.logDebug "Executing 'getBatteryPercent'"
 	def percentage
 	switch (voltage) {
     	case voltage < 4:
@@ -182,12 +182,12 @@ def getBatteryPercent(voltage) {
 }
 
 def refresh() {
-	log.debug "Executing 'refresh'"
+	parent.logDebug "Executing 'refresh'"
 	poll()    
 }
 
 def updateStatusAndRefresh() {
-	log.debug "Executing 'updateStatusAndRefresh'"
+	parent.logDebug "Executing 'updateStatusAndRefresh'"
     def resp = parent.apiGET("/api/me/start")
     setStatusRespCode(resp.status)
     setStatusResponse(resp.data)

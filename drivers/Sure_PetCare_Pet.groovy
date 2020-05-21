@@ -40,22 +40,22 @@ metadata {
 
 // parse events into attributes
 def parse(String description) {
-	log.debug "Parsing '${description}'"
+	parent.logDebug "Parsing '${description}'"
 	// TODO: handle 'switch' attribute
 
 }
 
 // handle commands
 def installed() {
-	log.debug "Executing 'installed'"
+	parent.logDebug "Executing 'installed'"
 }
 
 def updated() {
-	log.debug "Executing 'updated'"
+	parent.logDebug "Executing 'updated'"
 }
 
 def poll() {
-	log.debug "Executing 'poll' for ${device} ${this} ${device.deviceNetworkId}"
+	parent.logDebug "Executing 'poll' for ${device} ${this} ${device.deviceNetworkId}"
     
     if (!state.statusRespCode || state.statusRespCode != 200) {
 		log.error("Unexpected result in poll(): [${state.statusRespCode}] ${state.statusResponse}")
@@ -70,7 +70,7 @@ def poll() {
     	state.photoURL = pet.photo.location
     }
     def tagStatus = parent.getTagStatus(device.currentState("tag_id").getValue().toInteger())
-    log.debug "Cat indoors only status is ${tagStatus}"
+    parent.logDebug "Cat indoors only status is ${tagStatus}"
     sendEvent(name: 'indoorsOnly', value: tagStatus, displayed: true)
     def tag_id = pet.tag_id
     response = state.statusResponse.data.tags
@@ -110,7 +110,7 @@ def poll() {
 }
 
 def toggleIndoorsOnly() {
-	log.debug "Executing 'toggleIndoorsOnly'"
+	parent.logDebug "Executing 'toggleIndoorsOnly'"
 	if (device.currentState("indoorsOnly").getValue() == "false") { 
     	setIndoorsOnly("true")
     } else { 
@@ -120,12 +120,12 @@ def toggleIndoorsOnly() {
 }
 
 def refresh() {
-	log.debug "Executing 'refresh'"
+	parent.logDebug "Executing 'refresh'"
 	poll()
 }
 
 def updateStatusAndRefresh() {
-	log.debug "Executing 'updateStatusAndRefresh'"
+	parent.logDebug "Executing 'updateStatusAndRefresh'"
     def resp = parent.apiGET("/api/me/start")
     setStatusRespCode(resp.status)
     setStatusResponse(resp.data)
@@ -145,7 +145,7 @@ def setStatusResponse(respBody) {
 }
 
 def setIndoorsOnly(mode) {
-	log.debug "Executing 'setIndoorsOnly' with mode ${mode}"
+	parent.logDebug "Executing 'setIndoorsOnly' with mode ${mode}"
 	if (mode == "true") { 
     	parent.setTagToIndoorsOnly(device.currentState("tag_id").getValue().toInteger())
     	sendEvent(name: 'indoorsOnly', value: mode, displayed: true)
