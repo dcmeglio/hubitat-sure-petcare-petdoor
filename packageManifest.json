@@ -11,7 +11,8 @@
       "namespace": "alyc100",
       "location": "https://raw.githubusercontent.com/dcmeglio/hubitat-sure-petcare-petdoor/master/apps/sure_petcare_connect.groovy",
       "required": true,
-      "oauth": false
+      "oauth": false,
+	  "primary": true
     }
   ],
   "drivers": [
