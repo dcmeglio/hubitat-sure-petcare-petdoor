@@ -827,7 +827,7 @@ def apiPUT(path, body = [:]) {
 def apiGET(path) {
 	logDebug("Beginning API GET: ${apiURL(path)}")
     try {
-    	httpGet(uri: apiURL(path), headers: apiRequestHeaders(), timeout: 45 ) {
+    	httpGet(uri: apiURL(path), headers: apiRequestHeaders(), timeout: 90 ) {
     		response ->
 			logResponse(response)
 			return response

@@ -85,7 +85,7 @@ def poll() {
     
     //Pick up look through flap events
     def resp = parent.apiGET("/api/timeline/household/" + parent.getHouseholdID() + "/pet")
-    if (resp.status != 200) {
+    if (resp?.status != 200) {
 		log.error("Unexpected result in poll(): [${resp.status}] ${resp.data}")
 		return []
 	}
@@ -96,7 +96,7 @@ def poll() {
     
     for(def entry : resp.data.data) {
     	if (entry.movements) { 
-        	if ((entry.movements[0].tag_id == device.currentState("tag_id").getValue().toInteger()) && entry.movements[0].direction == 0) {
+        	if ((entry.movements[0].tag_id == device.currentState("tag_id")?.getValue().toInteger()) && entry.movements[0].direction == 0) {
             	def movementDate = new Date().parse("yyyy-MM-dd'T'HH:mm:ssXXX", entry.movements[0].created_at)
             	if (state.lastTimePetLooked < movementDate.getTime()) {
                 	state.lastTimePetLooked = movementDate.getTime()
