@@ -691,8 +691,8 @@ def refreshDevices() {
             if (flap.control.curfew && !flap.control.curfew.isEmpty()) {
 				def curfewObject = flap.control.curfew[0] ?: flap.control.curfew
             	app.updateSetting("curfewEnabled#${device.deviceNetworkId}", [type: "bool", value: true]) 
-                app.updateSetting("starting#${device.deviceNetworkId}", [type: "time", value: timeToString(curfewObject.lock_time, "yyyy-MM-dd'T'HH:mm:ss.SSSXX")]) 
-                app.updateSetting("ending#${device.deviceNetworkId}", [type: "time", value: timeToString(curfewObject.unlock_time, "yyyy-MM-dd'T'HH:mm:ss.SSSXX")]) 
+                app.updateSetting("starting#${device.deviceNetworkId}", [type: "date", value: timeToString(curfewObject.lock_time, "yyyy-MM-dd'T'HH:mm:ss.SSSXX")]) 
+                app.updateSetting("ending#${device.deviceNetworkId}", [type: "date", value: timeToString(curfewObject.unlock_time, "yyyy-MM-dd'T'HH:mm:ss.SSSXX")]) 
             } else {
             	app.updateSetting("curfewEnabled#${device.deviceNetworkId}", [type: bool, value: false]) 
             }

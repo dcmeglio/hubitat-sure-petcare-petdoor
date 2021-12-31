@@ -2,9 +2,9 @@
   "packageName": "Sure Petcare Pet Door",
   "author": "Alex Lee Yuk Cheung & Dominick Meglio",
   "minimumHEVersion": "2.1.9",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "releaseNotes": "Minor bug fixes",
-  "dateReleased": "2021-04-14",
+  "dateReleased": "2021-12-31",
   "apps": [
     {
       "id": "17306bd4-86b5-4404-9d3f-bcf5086619a4",
